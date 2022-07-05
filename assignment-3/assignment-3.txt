@@ -1,0 +1,146 @@
+[root@ip-172-31-22-6 ec2-user]# cd /root/
+[root@ip-172-31-22-6 ~]# git clone https://github.com/ashishrpandey/example-voting-app
+Cloning into 'example-voting-app'...
+remote: Enumerating objects: 494, done.
+remote: Total 494 (delta 0), reused 0 (delta 0), pack-reused 494
+Receiving objects: 100% (494/494), 236.17 KiB | 12.43 MiB/s, done.
+Resolving deltas: 100% (179/179), done.
+[root@ip-172-31-22-6 ~]# cd /root/example-voting-app/k8s-specifications/
+[root@ip-172-31-22-6 k8s-specifications]# kubectl apply -f .
+deployment.apps/db created
+service/db created
+deployment.apps/redis created
+service/redis created
+deployment.apps/result created
+service/result created
+deployment.apps/vote created
+service/vote created
+deployment.apps/worker created
+[root@ip-172-31-22-6 k8s-specifications]# kubectl get all
+NAME                          READY   STATUS    RESTARTS   AGE
+pod/db-b54cd94f4-qhlfk        1/1     Running   0          79s
+pod/kubia-2fdfv               1/1     Running   0          22h
+pod/kubia-7zztj               1/1     Running   0          22h
+pod/kubia-c7rfv               1/1     Running   0          22h
+pod/kubia-fsch2               1/1     Running   0          24m
+pod/kubia-k87rz               1/1     Running   0          26m
+pod/kubia-m6ws7               1/1     Running   0          25m
+pod/redis-868d64d78-2sp2x     1/1     Running   0          79s
+pod/result-5d57b59f4b-p45qr   1/1     Running   0          79s
+pod/vote-94849dc97-cdrxq      1/1     Running   0          79s
+pod/worker-dd46d7584-lzhkv    1/1     Running   0          78s
+
+NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+service/db           ClusterIP   10.97.173.224   <none>        5432/TCP         79s
+service/kubernetes   ClusterIP   10.96.0.1       <none>        443/TCP          6d20h
+service/kubia2       ClusterIP   10.99.10.99     <none>        80/TCP           31m
+service/redis        ClusterIP   10.110.70.238   <none>        6379/TCP         79s
+service/result       NodePort    10.100.175.74   <none>        5001:31001/TCP   79s
+service/vote         NodePort    10.103.176.85   <none>        5000:31000/TCP   78s
+
+NAME                     READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/db       1/1     1            1           79s
+deployment.apps/redis    1/1     1            1           79s
+deployment.apps/result   1/1     1            1           79s
+deployment.apps/vote     1/1     1            1           79s
+deployment.apps/worker   1/1     1            1           78s
+
+NAME                                DESIRED   CURRENT   READY   AGE
+replicaset.apps/db-b54cd94f4        1         1         1       79s
+replicaset.apps/kubia               3         3         3       22h
+replicaset.apps/redis-868d64d78     1         1         1       79s
+replicaset.apps/result-5d57b59f4b   1         1         1       79s
+replicaset.apps/vote-94849dc97      1         1         1       79s
+replicaset.apps/worker-dd46d7584    1         1         1       78s
+[root@ip-172-31-22-6 k8s-specifications]#
+[root@ip-172-31-22-6 ec2-user]# kubectl get po
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-qhlfk        1/1     Running   0          20m
+kubia-2fdfv               1/1     Running   0          22h
+kubia-7zztj               1/1     Running   0          22h
+kubia-c7rfv               1/1     Running   0          22h
+kubia-fsch2               1/1     Running   0          43m
+kubia-k87rz               1/1     Running   0          44m
+kubia-m6ws7               1/1     Running   0          44m
+redis-868d64d78-2sp2x     1/1     Running   0          20m
+result-5d57b59f4b-p45qr   1/1     Running   0          20m
+vote-94849dc97-cdrxq      1/1     Running   0          20m
+worker-dd46d7584-lzhkv    1/1     Running   0          20m
+[root@ip-172-31-22-6 ec2-user]# kubectl delete po vote-94849dc97-cdrxq
+pod "vote-94849dc97-cdrxq" deleted
+[root@ip-172-31-22-6 ec2-user]# kubectl get po
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-qhlfk        1/1     Running   0          21m
+kubia-2fdfv               1/1     Running   0          22h
+kubia-7zztj               1/1     Running   0          22h
+kubia-c7rfv               1/1     Running   0          22h
+kubia-fsch2               1/1     Running   0          44m
+kubia-k87rz               1/1     Running   0          45m
+kubia-m6ws7               1/1     Running   0          44m
+redis-868d64d78-2sp2x     1/1     Running   0          21m
+result-5d57b59f4b-p45qr   1/1     Running   0          21m
+vote-94849dc97-pzgbg      1/1     Running   0          8s
+worker-dd46d7584-lzhkv    1/1     Running   0          21m
+[root@ip-172-31-22-6 ec2-user]# kubectl delete po worker-dd46d7584-lzhkv
+pod "worker-dd46d7584-lzhkv" deleted
+[root@ip-172-31-22-6 ec2-user]#
+[root@ip-172-31-22-6 ec2-user]#
+[root@ip-172-31-22-6 ec2-user]# kubectl get po
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-qhlfk        1/1     Running   0          24m
+kubia-2fdfv               1/1     Running   0          22h
+kubia-7zztj               1/1     Running   0          22h
+kubia-c7rfv               1/1     Running   0          22h
+kubia-fsch2               1/1     Running   0          47m
+kubia-k87rz               1/1     Running   0          48m
+kubia-m6ws7               1/1     Running   0          47m
+redis-868d64d78-2sp2x     1/1     Running   0          24m
+result-5d57b59f4b-p45qr   1/1     Running   0          24m
+vote-94849dc97-pzgbg      1/1     Running   0          3m7s
+worker-dd46d7584-8kldh    1/1     Running   0          39s
+[root@ip-172-31-22-6 ec2-user]# kubectl delete po db-b54cd94f4-qhlfk
+pod "db-b54cd94f4-qhlfk" deleted
+[root@ip-172-31-22-6 ec2-user]# kubectl get po
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-wns9q        1/1     Running   0          53s
+kubia-2fdfv               1/1     Running   0          22h
+kubia-7zztj               1/1     Running   0          22h
+kubia-c7rfv               1/1     Running   0          22h
+kubia-fsch2               1/1     Running   0          49m
+kubia-k87rz               1/1     Running   0          50m
+kubia-m6ws7               1/1     Running   0          50m
+redis-868d64d78-2sp2x     1/1     Running   0          26m
+result-5d57b59f4b-p45qr   1/1     Running   0          26m
+vote-94849dc97-pzgbg      1/1     Running   0          5m12s
+worker-dd46d7584-8kldh    1/1     Running   1          2m44s
+[root@ip-172-31-22-6 ec2-user]#
+[root@ip-172-31-22-6 ec2-user]# kubectl get po
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-wns9q        1/1     Running   0          6m38s
+kubia-2fdfv               1/1     Running   0          22h
+kubia-7zztj               1/1     Running   0          22h
+kubia-c7rfv               1/1     Running   0          22h
+kubia-fsch2               1/1     Running   0          55m
+kubia-k87rz               1/1     Running   0          56m
+kubia-m6ws7               1/1     Running   0          55m
+redis-868d64d78-2sp2x     1/1     Running   0          31m
+result-5d57b59f4b-p45qr   1/1     Running   0          31m
+vote-94849dc97-pzgbg      1/1     Running   0          10m
+worker-dd46d7584-8kldh    1/1     Running   1          8m29s
+[root@ip-172-31-22-6 ec2-user]# kubectl delete po result-5d57b59f4b-p45qr
+pod "result-5d57b59f4b-p45qr" deleted
+[root@ip-172-31-22-6 ec2-user]# kubectl get po
+NAME                      READY   STATUS    RESTARTS   AGE
+db-b54cd94f4-wns9q        1/1     Running   0          7m39s
+kubia-2fdfv               1/1     Running   0          22h
+kubia-7zztj               1/1     Running   0          22h
+kubia-c7rfv               1/1     Running   0          22h
+kubia-fsch2               1/1     Running   0          56m
+kubia-k87rz               1/1     Running   0          57m
+kubia-m6ws7               1/1     Running   0          56m
+redis-868d64d78-2sp2x     1/1     Running   0          32m
+result-5d57b59f4b-mhnvh   1/1     Running   0          40s
+vote-94849dc97-pzgbg      1/1     Running   0          11m
+worker-dd46d7584-8kldh    1/1     Running   1          9m30s
+[root@ip-172-31-22-6 ec2-user]#
+

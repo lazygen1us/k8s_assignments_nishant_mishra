@@ -1,0 +1,10 @@
+observations:
+
+1. when voting pod deleted -> voting pod recreated automatically. voting and result pages work correctly as expected
+2. when worker pod deleted -> worker pod recreated automatically. voting and result pages work correctly as expected
+3. when db pod deleted -> db pod recreated automatically. voting can be done but result doesnt change. 
+	Reason - result point to old db pod which doesnt exist so result cannot be updated
+	Solution - when result pod deleted -> result pod recreated automatically. result pod now point to new db pod. voting and result pages now work correctly as expected
+
+
+
