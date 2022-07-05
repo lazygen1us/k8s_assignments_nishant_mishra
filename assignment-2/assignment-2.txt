@@ -1,0 +1,100 @@
+[ec2-user@ip-172-31-22-6 ~]$ cd /root/
+-bash: cd: /root/: Permission denied
+[ec2-user@ip-172-31-22-6 ~]$ sudo su
+[root@ip-172-31-22-6 ec2-user]#
+[root@ip-172-31-22-6 ec2-user]# cd /root/kubernetes-training/04-controllers/
+[root@ip-172-31-22-6 04-controllers]# ls
+batch-job                                kubia-liveness-probe.yaml               kubia-unhealthy                           ssd-monitor-daemonset.yaml
+batch-job.yaml                           kubia-rc.yaml                           multi-completion-batch-job.yaml           time-limited-batch-job.yaml
+cronjob.yaml                             kubia-replicaset-matchexpressions.yaml  multi-completion-parallel-batch-job.yaml
+kubia-liveness-probe-initial-delay.yaml  kubia-replicaset.yaml                   ssd-monitor
+[root@ip-172-31-22-6 04-controllers]# vi cronjob.yaml
+[root@ip-172-31-22-6 04-controllers]# kubectl apply -f cronjob.yaml
+cronjob.batch/batch-job-every-fifteen-minutes created
+[root@ip-172-31-22-6 04-controllers]# kubectl get jobs
+No resources found in default namespace.
+[root@ip-172-31-22-6 04-controllers]# cat cronjob.yaml
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: batch-job-every-fifteen-minutes
+spec:
+  schedule: "0,15,30,45 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: periodic-batch-job
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: main
+            image: luksa/batch-job
+[root@ip-172-31-22-6 04-controllers]# kubectl get jobs
+NAME                                         COMPLETIONS   DURATION   AGE
+batch-job-every-fifteen-minutes-1656915300   1/1           2m6s       3m58s
+[root@ip-172-31-22-6 04-controllers]# kubectl get jobs
+NAME                                         COMPLETIONS   DURATION   AGE
+batch-job-every-fifteen-minutes-1656915300   1/1           2m6s       7m40s
+[root@ip-172-31-22-6 04-controllers]# cat /etc/cron
+cron.d/       cron.daily/   cron.deny     cron.hourly/  cron.monthly/ crontab       cron.weekly/
+[root@ip-172-31-22-6 04-controllers]# cat /etc/cron
+cron.d/       cron.daily/   cron.deny     cron.hourly/  cron.monthly/ crontab       cron.weekly/
+[root@ip-172-31-22-6 04-controllers]# cat cronjob.yaml
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: batch-job-every-fifteen-minutes
+spec:
+  schedule: "0,15,30,45 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: periodic-batch-job
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: main
+            image: luksa/batch-job
+[root@ip-172-31-22-6 04-controllers]# kubectl get jobs
+NAME                                         COMPLETIONS   DURATION   AGE
+batch-job-every-fifteen-minutes-1656917100   1/1           2m5s       36m
+batch-job-every-fifteen-minutes-1656918000   1/1           2m4s       21m
+batch-job-every-fifteen-minutes-1656918900   1/1           2m4s       6m45s
+[root@ip-172-31-22-6 04-controllers]# kubectl get po
+NAME                                               READY   STATUS      RESTARTS   AGE
+batch-job-every-fifteen-minutes-1656917100-djx8z   0/1     Completed   0          43m
+batch-job-every-fifteen-minutes-1656918000-kkbdt   0/1     Completed   0          28m
+batch-job-every-fifteen-minutes-1656918900-hq76j   0/1     Completed   0          14m
+[root@ip-172-31-22-6 04-controllers]# kubectl get jobs
+NAME                                         COMPLETIONS   DURATION   AGE
+batch-job-every-fifteen-minutes-1656917100   1/1           2m5s       46m
+batch-job-every-fifteen-minutes-1656918000   1/1           2m4s       31m
+batch-job-every-fifteen-minutes-1656918900   1/1           2m4s       16m
+batch-job-every-fifteen-minutes-1656919800   0/1           117s       117s
+[root@ip-172-31-22-6 04-controllers]# kubectl get po
+NAME                                               READY   STATUS      RESTARTS   AGE
+batch-job-every-fifteen-minutes-1656917100-djx8z   0/1     Completed   0          46m
+batch-job-every-fifteen-minutes-1656918000-kkbdt   0/1     Completed   0          31m
+batch-job-every-fifteen-minutes-1656918900-hq76j   0/1     Completed   0          17m
+batch-job-every-fifteen-minutes-1656919800-7cdzt   1/1     Running     0          2m4s
+[root@ip-172-31-22-6 04-controllers]# kubectl get jobs
+NAME                                         COMPLETIONS   DURATION   AGE
+batch-job-every-fifteen-minutes-1656918000   1/1           2m4s       32m
+batch-job-every-fifteen-minutes-1656918900   1/1           2m4s       17m
+batch-job-every-fifteen-minutes-1656919800   1/1           2m7s       2m13s
+[root@ip-172-31-22-6 04-controllers]# kubectl get po
+NAME                                               READY   STATUS      RESTARTS   AGE
+batch-job-every-fifteen-minutes-1656918000-kkbdt   0/1     Completed   0          32m
+batch-job-every-fifteen-minutes-1656918900-hq76j   0/1     Completed   0          17m
+batch-job-every-fifteen-minutes-1656919800-7cdzt   0/1     Completed   0          2m26s
+[root@ip-172-31-22-6 04-controllers]# kubectl delete cronjob batch-job-every-fifteen-minutes
+cronjob.batch "batch-job-every-fifteen-minutes" deleted
+[root@ip-172-31-22-6 04-controllers]# kubectl get jobs
+No resources found in default namespace.
+[root@ip-172-31-22-6 04-controllers]# kubectl get po
+No resources found in default namespace.
+[root@ip-172-31-22-6 04-controllers]#

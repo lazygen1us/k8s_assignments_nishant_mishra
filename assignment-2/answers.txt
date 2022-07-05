@@ -1,0 +1,2 @@
+jobs -> create pods to perform specific tasks 
+cronjobs -> work same like jobs but run specific tasks on specific predefined time/interval etc
